@@ -13,11 +13,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# pylint: disable=unused-import
-# flake8: noqa
-# isort:skip_file
 
-# Import any providers which need to be automatically registered here
-from . import nim_llm
-from . import openai_llm
-from . import huggingface_llm
+general:
+  use_uvloop: true
+
+
+functions: {}
+
+llms:
+  huggingface_llm:
+    _type: huggingface
+    model_name: AI-Sweden-Models/gpt-sw3-126m
+    device: cuda:0 # or cpu
+    temperature: 0.6
+    top_p: 0.7
+    max_new_tokens: 100
+
+workflow:
+  _type: local_hf_llm  
+  llm_name: huggingface_llm

@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Copyright (c) 2024-2025, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2025, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
+
 from aiq.builder.builder import Builder
 from aiq.builder.framework_enum import LLMFrameworkEnum
 from aiq.cli.register_workflow import register_llm_client
@@ -20,19 +22,23 @@ from aiq.llm.nim_llm import NIMModelConfig
 from aiq.llm.openai_llm import OpenAIModelConfig
 from aiq.llm.huggingface_llm import HuggingFaceModelConfig
 
-@register_llm_client(config_type=NIMModelConfig, wrapper_type=LLMFrameworkEnum.LANGCHAIN)
-async def nim_langchain(llm_config: NIMModelConfig, builder: Builder):
+@register_llm_client(
+    config_type=HuggingFaceModelConfig,
+    wrapper_type=LLMFrameworkEnum.HUGGINGFACE
+)
+async def register_huggingface_client(config: HuggingFaceModelConfig, builder: Builder):
+    """Register HuggingFace LLM client."""
+    import torch
+    from transformers import pipeline, AutoTokenizer, AutoModelForCausalLM
 
-    from langchain_nvidia_ai_endpoints import ChatNVIDIA
+    # Initialize Variables
+    model_name = "AI-Sweden-Models/gpt-sw3-126m"
+    device = "cuda:0" if torch.cuda.is_available() else "cpu"
+    prompt = "Träd är fina för att"
 
-    yield ChatNVIDIA(**llm_config.model_dump(exclude={"type"}, by_alias=True))
-
-
-@register_llm_client(config_type=OpenAIModelConfig, wrapper_type=LLMFrameworkEnum.LANGCHAIN)
-async def openai_langchain(llm_config: OpenAIModelConfig, builder: Builder):
-
-    from langchain_openai import ChatOpenAI
-
-    yield ChatOpenAI(**llm_config.model_dump(exclude={"type"}, by_alias=True))
-
-    
+    # Initialize Tokenizer & Model
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model = AutoModelForCausalLM.from_pretrained(model_name)
+    model.eval()
+    model.to(device)
+    yield tokenizer, model
