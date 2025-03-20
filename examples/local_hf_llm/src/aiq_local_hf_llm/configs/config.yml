@@ -32,3 +32,4 @@ llms:
 workflow:
   _type: local_hf_llm  
   llm_name: huggingface_llm
+  device: cuda:0 # or cpu

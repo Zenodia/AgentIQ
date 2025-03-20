@@ -14,15 +14,15 @@ logger = logging.getLogger(__name__)
 class LocalGPTSWLM(FunctionBaseConfig, name="local_hf_llm"):
     # Add your custom configuration parameters here
     llm_name: LLMRef = "huggingface_llm"
+    device: str="cuda:0" # or cpu
 
-
-@register_function(config_type=LocalGPTSWLM, framework_wrappers=[LLMFrameworkEnum.HUGGINGFACE])
+@register_function(config_type=LocalGPTSWLM, framework_wrappers=[LLMFrameworkEnum.HF])
 async def local_huggingface_gptsw3_workflow(config: LocalGPTSWLM, builder: Builder):
-    tokenizer, model = await builder.get_llm(llm_name=config.llm_name, wrapper_type=LLMFrameworkEnum.HUGGINGFACE)
-    print(type(tokenizer), type(model))
+    tokenizer, model = await builder.get_llm(llm_name=config.llm_name, wrapper_type=LLMFrameworkEnum.HF)
+    print(type(tokenizer), type(model), config.device)
     async def _response_fn(input_message: str) -> str:
         logger.info("input_message=%s", input_message)
-        input_ids = tokenizer(input_message, return_tensors="pt")["input_ids"].to(device)
+        input_ids = tokenizer(input_message, return_tensors="pt")["input_ids"].to(config.device)
 
         generated_token_ids = model.generate(
             inputs=input_ids,
@@ -33,7 +33,6 @@ async def local_huggingface_gptsw3_workflow(config: LocalGPTSWLM, builder: Build
         )[0]
 
         generated_text = tokenizer.decode(generated_token_ids)
-
 
         return generated_text
 

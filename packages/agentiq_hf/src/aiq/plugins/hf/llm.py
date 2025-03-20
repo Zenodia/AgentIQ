@@ -24,7 +24,7 @@ from aiq.llm.huggingface_llm import HuggingFaceModelConfig
 
 @register_llm_client(
     config_type=HuggingFaceModelConfig,
-    wrapper_type=LLMFrameworkEnum.HUGGINGFACE
+    wrapper_type=LLMFrameworkEnum.HF
 )
 async def register_huggingface_client(config: HuggingFaceModelConfig, builder: Builder):
     """Register HuggingFace LLM client."""
@@ -34,7 +34,6 @@ async def register_huggingface_client(config: HuggingFaceModelConfig, builder: B
     # Initialize Variables
     model_name = "AI-Sweden-Models/gpt-sw3-126m"
     device = "cuda:0" if torch.cuda.is_available() else "cpu"
-    prompt = "Träd är fina för att"
 
     # Initialize Tokenizer & Model
     tokenizer = AutoTokenizer.from_pretrained(model_name)

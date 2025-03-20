@@ -21,4 +21,4 @@ class LLMFrameworkEnum(str, Enum):
     LLAMA_INDEX = "llama_index"
     CREWAI = "crewai"
     SEMANTIC_KERNEL = "semantic_kernel"
-    HUGGINGFACE ="hf"
+    HF ="hf"
