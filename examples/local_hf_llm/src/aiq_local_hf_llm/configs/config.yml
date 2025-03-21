@@ -25,8 +25,8 @@ functions:
 llms:
   huggingface_llm:
     _type: huggingface
-    model_name: tabularisai/multilingual-sentiment-analysis
-    model_type: AutoModelForSequenceClassification
+    model_name: AI-Sweden-Models/gpt-sw3-126m #tabularisai/multilingual-sentiment-analysis #AI-Sweden-Models/gpt-sw3-126m
+    model_type: AutoModelForCausalLM #AutoModelForSequenceClassification # AutoModelForCausalLM
     device: cuda:0 # or cpu
     temperature: 0.6
     top_p: 0.7
@@ -37,5 +37,5 @@ workflow:
   llm_name: huggingface_llm
   device: cuda:0 # or cpu
   lang_id_tool: language_classifier_tool
-  use_lang_detect_tool: true
-  is_auto_regressive: false
+  use_lang_detect_tool: false
+  is_auto_regressive: true
