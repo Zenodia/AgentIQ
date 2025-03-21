@@ -17,13 +17,16 @@
 general:
   use_uvloop: true
 
-
-functions: {}
+functions: 
+  language_classifier_tool:
+    _type: language_classifier_tool
+    supported_language: [af, ar, bg, bn, ca, cs, cy, da, de, el, en, es, et, fa, fi, fr, gu, he,hi, hr, hu, id, it, ja, kn, ko, lt, lv, mk, ml, mr, ne, nl, no, pa, pl,pt, ro, ru, sk, sl, so, sq, sv, sw, ta, te, th, tl, tr, uk, ur, vi, zh-cn, zh-tw]
 
 llms:
   huggingface_llm:
     _type: huggingface
-    model_name: AI-Sweden-Models/gpt-sw3-126m
+    model_name: tabularisai/multilingual-sentiment-analysis
+    model_type: AutoModelForSequenceClassification
     device: cuda:0 # or cpu
     temperature: 0.6
     top_p: 0.7
@@ -33,3 +36,6 @@ workflow:
   _type: local_hf_llm  
   llm_name: huggingface_llm
   device: cuda:0 # or cpu
+  lang_id_tool: language_classifier_tool
+  use_lang_detect_tool: true
+  is_auto_regressive: false

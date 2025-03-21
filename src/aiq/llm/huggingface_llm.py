@@ -16,6 +16,9 @@ class HuggingFaceModelConfig(LLMBaseConfig, name="huggingface"):
     model_name: str = Field(
         description="The name/path of the HuggingFace model"
     )
+    model_type: str = Field(
+        description="Model type, currently support only AutoModelForCausalLM and AutoModelForSequenceClassification,"
+    )
     device: str = Field(
         default="cuda:0",
         description="Device to run the model on (cuda:0 or cpu)"
