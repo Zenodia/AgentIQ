@@ -25,7 +25,7 @@ functions:
 llms:
   huggingface_llm:
     _type: huggingface
-    model_name: AI-Sweden-Models/gpt-sw3-126m #tabularisai/multilingual-sentiment-analysis #AI-Sweden-Models/gpt-sw3-126m
+    model_name: utter-project/EuroLLM-1.7B-Instruct #tabularisai/multilingual-sentiment-analysis #AI-Sweden-Models/gpt-sw3-126m #utter-project/EuroLLM-1.7B-Instruct
     model_type: AutoModelForCausalLM #AutoModelForSequenceClassification # AutoModelForCausalLM
     device: cuda:0 # or cpu
     temperature: 0.6

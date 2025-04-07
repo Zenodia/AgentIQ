@@ -7,6 +7,8 @@ from aiq.builder.builder import Builder
 from aiq.builder.llm import LLMProviderInfo
 from aiq.cli.register_workflow import register_llm_provider
 from aiq.data_models.llm import LLMBaseConfig
+import os
+
 
 class HuggingFaceModelConfig(LLMBaseConfig, name="huggingface"):
     """A HuggingFace LLM provider configuration."""

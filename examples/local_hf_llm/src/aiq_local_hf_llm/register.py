@@ -23,6 +23,8 @@ class LocalGPTSWLM(FunctionBaseConfig, name="local_hf_llm"):
 async def local_huggingface_gptsw3_workflow(config: LocalGPTSWLM, builder: Builder):
     import torch
     from colorama import Fore
+    import os
+    import json
     tokenizer, model = await builder.get_llm(llm_name=config.llm_name, wrapper_type=LLMFrameworkEnum.HF)
     if config.use_lang_detect_tool:
         lang_tool = builder.get_tool(fn_name=config.lang_id_tool, wrapper_type=LLMFrameworkEnum.LANGCHAIN)
@@ -51,10 +53,11 @@ async def local_huggingface_gptsw3_workflow(config: LocalGPTSWLM, builder: Build
             generated_text = tokenizer.decode(generated_token_ids)
         else:
             output_text=await predict_sentiment([input_message])
-            generated_text=f"{input_message} | Sentiment:{output_text[0]}"
+            generated_text=json.dumps({"txt":input_message, "Sentiment":output_text[0]})
         if config.use_lang_detect_tool : 
             lang_id = (await lang_tool.ainvoke(input_message))        
-            final_output=f"detected_language : {lang_id} | output text : {generated_text}"
+            d={"lang_id":lang_id,"txt":generated_text}
+            final_output=json.dumps(d)
         else:
             final_output=generated_text
         print(Fore.CYAN+"final response :\n", final_output , Fore.RESET)
