@@ -18,6 +18,8 @@ dependencies = [
   "transformers==4.49.0",
   "sentencepiece==0.2.0",
   "langdetect",
+  "pillow",
+  "blobfile"
 ]
 requires-python = ">=3.12"
 description = "Custom AgentIQ Workflow"

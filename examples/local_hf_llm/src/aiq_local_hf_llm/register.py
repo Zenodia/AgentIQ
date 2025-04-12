@@ -18,50 +18,42 @@ class LocalGPTSWLM(FunctionBaseConfig, name="local_hf_llm"):
     lang_id_tool: FunctionRef
     use_lang_detect_tool: bool
     is_auto_regressive: bool
+    sample_img_path: str 
 
 @register_function(config_type=LocalGPTSWLM, framework_wrappers=[LLMFrameworkEnum.HF])
 async def local_huggingface_gptsw3_workflow(config: LocalGPTSWLM, builder: Builder):
-    import torch
+    from PIL import Image
     from colorama import Fore
-    import os
-    import json
-    tokenizer, model = await builder.get_llm(llm_name=config.llm_name, wrapper_type=LLMFrameworkEnum.HF)
-    if config.use_lang_detect_tool:
-        lang_tool = builder.get_tool(fn_name=config.lang_id_tool, wrapper_type=LLMFrameworkEnum.LANGCHAIN)
-    print(type(tokenizer), type(model), config.device)
-    async def predict_sentiment(texts):
-        inputs = tokenizer(texts, return_tensors="pt", truncation=True, padding=True, max_length=512).to(config.device)
-        with torch.no_grad():
-            outputs = model(**inputs)
-        probabilities = torch.nn.functional.softmax(outputs.logits, dim=-1)
-        sentiment_map = {0: "Very Negative", 1: "Negative", 2: "Neutral", 3: "Positive", 4: "Very Positive"}
-        labels=torch.argmax(probabilities, dim=-1).tolist()
-        return [sentiment_map[p] for p in labels]
+    from transformers import AutoModelForCausalLM, AutoProcessor
+
+    processor, model = await builder.get_llm(llm_name=config.llm_name, wrapper_type=LLMFrameworkEnum.HF)
+    #processor = AutoProcessor.from_pretrained(config.llms.huggingface_llm.model_name, trust_remote_code=True)
+    print(Fore.RED + "sample_img_path =", config.sample_img_path)
+    
+    
+    image_path = config.sample_img_path
+    image = Image.open(image_path)
+
+
 
     async def _response_fn(input_message: str) -> str:
         logger.info("input_message=%s", input_message)
-        if config.is_auto_regressive: 
-            input_ids = tokenizer(input_message, return_tensors="pt")["input_ids"].to(config.device)
-            
-            generated_token_ids = model.generate(
-                inputs=input_ids,
-                max_new_tokens=100,
-                do_sample=True,
-                temperature=0.6,
-                top_p=1,
-            )[0]
-            generated_text = tokenizer.decode(generated_token_ids)
-        else:
-            output_text=await predict_sentiment([input_message])
-            generated_text=json.dumps({"txt":input_message, "Sentiment":output_text[0]})
-        if config.use_lang_detect_tool : 
-            lang_id = (await lang_tool.ainvoke(input_message))        
-            d={"lang_id":lang_id,"txt":generated_text}
-            final_output=json.dumps(d)
-        else:
-            final_output=generated_text
-        print(Fore.CYAN+"final response :\n", final_output , Fore.RESET)
-        return final_output
+        messages = [
+            {"role": "user", "content": [{"type": "image", "image": image_path}, {"type": "text", "text": input_message}]}
+        ]
+        text = processor.apply_chat_template(messages, add_generation_prompt=True, return_tensors="pt")
+        inputs = processor(images=image, text=text, return_tensors="pt", device_map='auto', padding=True, truncation=True).to('cuda:0')
+        generated_ids = model.generate(**inputs, max_new_tokens=512)
+        generated_ids_trimmed = [
+            out_ids[len(in_ids) :] for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
+        ]
+        response = processor.batch_decode(
+            generated_ids_trimmed, skip_special_tokens=True, clean_up_tokenization_spaces=False
+        )[0]
+        print(response)
+
+        print(Fore.CYAN+"final response :\n", response , Fore.RESET)
+        return response
 
     yield _response_fn
     

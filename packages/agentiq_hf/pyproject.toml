@@ -22,8 +22,13 @@ dependencies = [
   "agentiq",
   "torch==2.6.0",
   "torchvision==0.21.0",
-  "transformers==4.49.0",
+  "transformers==4.51.1",
   "sentencepiece==0.2.0",
+  "accelerate==1.6.0",
+  "tiktoken",
+  "blobfile",
+  "einops",
+  "attrdict"
 ]
 requires-python = ">=3.12"
 description = "Subpackage for HuggingFace integration in AgentIQ"

@@ -25,9 +25,9 @@ functions:
 llms:
   huggingface_llm:
     _type: huggingface
-    model_name: utter-project/EuroLLM-1.7B-Instruct #tabularisai/multilingual-sentiment-analysis #AI-Sweden-Models/gpt-sw3-126m #utter-project/EuroLLM-1.7B-Instruct
+    model_name: moonshotai/Kimi-VL-A3B-Thinking #utter-project/EuroLLM-1.7B-Instruct #tabularisai/multilingual-sentiment-analysis #AI-Sweden-Models/gpt-sw3-126m #utter-project/EuroLLM-1.7B-Instruct
     model_type: AutoModelForCausalLM #AutoModelForSequenceClassification # AutoModelForCausalLM
-    device: cuda:0 # or cpu
+    device: cuda    
     temperature: 0.6
     top_p: 0.7
     max_new_tokens: 100
@@ -39,3 +39,4 @@ workflow:
   lang_id_tool: language_classifier_tool
   use_lang_detect_tool: false
   is_auto_regressive: true
+  sample_img_path: /home/zenodia/Agents/HFlocalckpt_agentiq/examples/local_hf_llm/picnic.jpg
