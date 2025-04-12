@@ -111,7 +111,7 @@ async def register_huggingface_client(config: HuggingFaceModelConfig, builder: B
     #print(Fore.RED+"model_d", model_d, Fore.RESET)
     model_name=model_d['model_name']
     model_type=model_d['model_type']
-    print(Fore.RED + "model dictionary", model_d, '\n\n',   Fore.RESET)
+    #print(Fore.RED + "model dictionary", model_d, '\n\n',   Fore.RESET)
     device=model_d["device"]
     num_gpus=torch.cuda.device_count()
     logger.debug("model_name is : %s", model_name)
@@ -121,10 +121,13 @@ async def register_huggingface_client(config: HuggingFaceModelConfig, builder: B
     
     #device = "cuda:0" if torch.cuda.is_available() else "cpu"    
     # Initialize Tokenizer & Model
-    if model_type=='AutoModelForCausalLM':
+    if model_type=='AutoModelForCausalLM' and 'moonshot' in model_name:
         #tokenizer = AutoTokenizer.from_pretrained(model_name,torch_dtype="auto",device_map="auto",trust_remote_code=True,)
         #model = AutoModelForCausalLM.from_pretrained(model_name)
         model, tokenizer=load_model(model_name, device, num_gpus, load_8bit=False, debug=False)
+    elif model_type=='AutoModelForCausalLM' :
+        tokenizer = AutoTokenizer.from_pretrained(model_name,torch_dtype="auto",device_map="auto",trust_remote_code=True,)
+        model = AutoModelForCausalLM.from_pretrained(model_name)
     elif model_type=="AutoModelForSequenceClassification":
         tokenizer = AutoTokenizer.from_pretrained(model_name)
         model = AutoModelForSequenceClassification.from_pretrained(model_name)

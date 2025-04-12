@@ -20,7 +20,7 @@ limitations under the License.
   SPDX-License-Identifier: Apache-2.0
 -->
 
-# A Simple Plot Chart Agent
+# support EuroLLM,GPTSW3 and VLM Moonshot/Kimi 
 
 A minimal example demonstrating an E2E chart plotting agentic workflow fully configured by a YAML file. This workflow leverages the AgentIQ plugin system and `Builder` to integrate pre-built and custom tools into the workflow. Key elements are summarized below:
 
@@ -31,7 +31,8 @@ A minimal example demonstrating an E2E chart plotting agentic workflow fully con
 * [Example Usage](#example-usage)
 
 ## Key Features
-
+- **Locally load huggingface LLM provider and LLM Client:** able to load multiple huggingface multilingual llms such as EuroLLM , GPTSW3 , tabularisai/multilingual-sentiment-analysis as well as moonshot's Kimi smaller (3B variant)
+- ** can integrate multimodality by default, see config_moonshot.yml and the aiq run example below
 - **Pre-built Tools:** Leverages core AgentIQ library tools.
 - **Custom Plugin System:** Developers can bring in new tools using plugins.
 - **High-level API:** Enables defining functions that transform into asynchronous LangChain tools.
@@ -47,26 +48,31 @@ If you have not already done so, follow the instructions in the [Install Guide](
 ### Install this Workflow:
 
 From the root directory of the AgentIQ library, run the following commands:
-
 ```bash
-uv pip install -e examples/plot_charts
+uv pip install -e .
 ```
 
-### Set Up API Keys
-If you have not already done so, follow the [Obtaining API Keys](../../docs/source/intro/get-started.md#obtaining-api-keys) instructions to obtain an NVIDIA API key. You need to set your NVIDIA API key as an environment variable to access NVIDIA AI services:
 
 ```bash
-export NVIDIA_API_KEY=<YOUR_API_KEY>
+uv pip install -e packages/agentiq_hf
+uv pip install -e examples/local_hf_llms
 ```
 
+### 
 ## Example Usage
 
 ### Run the Workflow
 
 Run the following command from the root of the AgentIQ repo to execute this workflow with the specified input:
 
+#### for EuroLLM change the register.text_only to register.py and run the following 
 ```bash
-aiq run --config_file examples/plot_charts/configs/config.yml  --input "make a line chart for me"
+aiq run --config_file examples/local_hf_llm/src/aiq_local_hf_llm/configs/config_multilingual.yml  --input "Jag gillar inte att äta grönsaker."
+```
+
+#### for multimodal foundational VLM model  change the register.moonshot_kimi_vlm to register.py  and run the following 
+```bash
+(.venv) zenodia@bumblebee:~/Agents/HFlocalckpt_agentiq/examples/local_hf_llm$ aiq run --config_file ./src/aiq_local_hf_llm/configs/config_moonshot.yml --input="Please infer step by stepd and describe where is the small girl are located?" 
 ```
 
 **Expected Output**
